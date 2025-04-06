@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,9 +47,9 @@ public class DatabaseTransactions {
             pstmt.setString(4, date);
 
             pstmt.executeUpdate();
-            System.out.println("✅ Expense inserted successfully.");
+            System.out.println("Expense inserted");
         } catch (SQLException e) {
-            System.err.println("❌ Error inserting expense: " + e.getMessage());
+            System.err.println("Error inserting expense" + e.getMessage());
         }
     }
 
@@ -75,4 +77,23 @@ public class DatabaseTransactions {
     }
 
 
+    public static String getSumByMonth(LocalDate date) throws SQLException {
+        String yearMonth = date.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        String sql = "SELECT SUM(amount) FROM expenses WHERE strftime('%Y-%m', date) = ?;";
+        double total = 0.0;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, yearMonth);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                total = rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Coudln't get sum by month: " + e.getMessage());
+        }
+        return String.format("%.2f", total);
+
+    }
 }
