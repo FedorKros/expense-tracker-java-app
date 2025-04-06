@@ -96,4 +96,32 @@ public class DatabaseTransactions {
         return String.format("%.2f", total);
 
     }
+
+    public static ExpenseComponent[] getExListByMonth(LocalDate date) throws SQLException {
+        String yearMonth = date.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        String getSQL = " SELECT expenses.id, amount, description, name, date FROM expenses, categories " +
+                        " WHERE categories.id = expenses.category_id " +
+                        " AND strftime('%Y-%m', date) = ?; ";
+        double total = 0.0;
+        List<ExpenseComponent> components = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(getSQL)) {
+            pstmt.setString(1, yearMonth);
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                ExpenseComponent ec = new ExpenseComponent(
+                        rs.getInt("id"),
+                        rs.getDouble("amount"),
+                        rs.getString("description"),
+                        rs.getString("name"),
+                        LocalDate.parse(rs.getString("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                );
+                components.add(ec);
+            }
+        } catch (SQLException e) {
+            System.out.println("Coudln't get sum by month: " + e.getMessage());
+        }
+        return components.toArray(new ExpenseComponent[0]);
+    }
 }

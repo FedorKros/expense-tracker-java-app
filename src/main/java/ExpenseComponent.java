@@ -1,6 +1,6 @@
 import java.time.LocalDate;
 
-public class Expense {
+public class ExpenseComponent {
     // id will be handled by the SQLite
     private int id;
 
@@ -10,7 +10,7 @@ public class Expense {
     private LocalDate date;
 
     // Constructor for creating an expense instance
-    public Expense(double amount, String description, String category) {
+    public ExpenseComponent(double amount, String description, String category) {
         this.amount = amount;
         this.description = description;
         this.category = category;
@@ -18,7 +18,7 @@ public class Expense {
     }
 
     // Constructor for loading from the db
-    public Expense(int id, double amount, String description, String category, LocalDate date) {
+    public ExpenseComponent(int id, double amount, String description, String category, LocalDate date) {
         this.id = id;
         this.amount = amount;
         this.description = description;
@@ -41,6 +41,12 @@ public class Expense {
     }
     public LocalDate getDate() {
         return date;
+    }
+
+
+    @Override
+    public String toString() {
+        return "[amount=" + amount + ", description=" + description + ", category=" + category + ", date=" + date + "]";
     }
 
 }

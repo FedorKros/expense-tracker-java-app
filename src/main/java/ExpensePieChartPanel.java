@@ -46,7 +46,10 @@ public class ExpensePieChartPanel extends JPanel {
             e.printStackTrace();
         }
 
-        String title = "Expenses by Category (" + selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) + ")";
+        String currentMonthNumber = selectedDate.format(DateTimeFormatter.ofPattern("MM"));
+        int monthInt = Integer.parseInt(currentMonthNumber);
+
+        String title = "Expenses by Category (" + CommonConstants.MONTH_NAMES.get(monthInt) + ")";
 
         JFreeChart chart = ChartFactory.createPieChart(
                 title,

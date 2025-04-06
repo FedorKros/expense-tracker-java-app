@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemListener {
 
     private ExpensePieChartPanel expensePieChartPanel;
-    private JPanel newExpensePanel;
+    private JPanel newExpensePanel, expensesList;
     private JTextPane amountTextPane, descriptionTextPane;
     private JComboBox categoryDropDown;
     private JButton addExpenseButton, previousMonthButton, nextMonthButton;
@@ -86,8 +86,35 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
 
 
         // add total expense counter label
-        totalExpenseTextPane = new JLabel("Total Expense: " + DatabaseTransactions.getSumByMonth(LocalDate.now()));
+        totalExpenseTextPane = new JLabel("Total expenses: " + DatabaseTransactions.getSumByMonth(LocalDate.now()));
         totalExpenseTextPane.setBounds(180, 500, CommonConstants.TEXTPANE_SIZE.width, CommonConstants.TEXTPANE_SIZE.height);
+
+
+        // add expenses list panel
+        expensesList = new JPanel();
+        expensesList.setLayout(new BoxLayout(expensesList, BoxLayout.Y_AXIS));
+
+        expensesList.revalidate();
+        expensesList.repaint();
+        JPanel expensesList = new JPanel();
+        expensesList.setLayout(new BoxLayout(expensesList, BoxLayout.Y_AXIS));
+
+
+        expensesList.revalidate();
+        expensesList.repaint();
+
+        // make it scrollable
+        JScrollPane scrollPane = new JScrollPane(expensesList);
+        scrollPane.setBounds((int)(CommonConstants.GUI_SIZE.width*0.55), 20,
+                CommonConstants.EXPENSES_LIST_SIZE.width, CommonConstants.EXPENSES_LIST_SIZE.height);
+
+        scrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
+//        scrollPane.setMaximumSize(CommonConstants.TASKPANEL_SIZE);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        // speed up the scroll bar
+        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+        verticalScrollBar.setUnitIncrement(20);
 
 
 
@@ -95,7 +122,7 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
         newExpensePanel.add(amountTextPane);
         newExpensePanel.add(descriptionTextPane);
         newExpensePanel.add(addExpenseButton);
-
+        getContentPane().add(scrollPane);
 
         expensePieChartPanel= new ExpensePieChartPanel();
 
@@ -104,12 +131,26 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
         add(totalExpenseTextPane);
         add(previousMonthButton);
         add(nextMonthButton);
+        add(scrollPane);
+        add(expensesList);
+
+
+        ExpenseComponent[] expc = DatabaseTransactions.getExListByMonth(LocalDate.now());
+        System.out.println(expc.length);
+        for (ExpenseComponent exp : expc) {
+            expensesList.add(new JLabel(exp.getAmount() + " - " + exp.getDescription()));
+        }
+
+        expensesList.revalidate();
+        expensesList.repaint();
+
+
         this.getContentPane().add(newExpensePanel, BorderLayout.CENTER);
     }
 
 
     public void updateTotalLabel(LocalDate neededDate) throws SQLException {
-        totalExpenseTextPane.setText("Total Expense: " + DatabaseTransactions.getSumByMonth(neededDate));
+        totalExpenseTextPane.setText("Total expenses: " + DatabaseTransactions.getSumByMonth(neededDate));
     }
 
 
