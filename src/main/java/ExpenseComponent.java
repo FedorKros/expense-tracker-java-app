@@ -46,7 +46,7 @@ public class ExpenseComponent {
 
     @Override
     public String toString() {
-        return "[amount=" + amount + ", description=" + description + ", category=" + category + ", date=" + date + "]";
+        return "[" + amount + " " + description + " " + category + " " + date + "]";
     }
 
 }
