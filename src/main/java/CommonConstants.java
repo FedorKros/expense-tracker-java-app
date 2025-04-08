@@ -19,8 +19,11 @@ public class CommonConstants {
     // Chart panel config
     public static final Dimension CHART_SIZE = new Dimension(500, 400);
 
-    //
+    // Expenses scrollable list size
     public static final Dimension EXPENSES_LIST_SIZE = new Dimension((int)(GUI_SIZE.width*0.40), (int)(GUI_SIZE.height*0.90));
+
+    //
+    public static final Dimension TOTAL_EXPENSES_LABEL_SIZE = new Dimension(TEXTPANE_SIZE.width*2, TEXTPANE_SIZE.height);
 
     // Hashmap for months
     public static final Map<Integer, String> MONTH_NAMES = new HashMap<>();

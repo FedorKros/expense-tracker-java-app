@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +13,7 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
 
     private ExpensePieChartPanel expensePieChartPanel;
     private JPanel newExpensePanel, expensesList;
-    private JTextPane amountTextPane, descriptionTextPane;
+    private CustomTextPane amountTextPane, descriptionTextPane;
     private JComboBox categoryDropDown;
     private JButton addExpenseButton, previousMonthButton, nextMonthButton;
     private JLabel totalExpenseTextPane;
@@ -35,25 +36,26 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
 
     public void addGuiCompenents() throws SQLException {
 
+        setGlobalUIFont(new Font("Century Gothic", Font.PLAIN, 14));
 
         // new expense panel
         newExpensePanel = new JPanel();
         newExpensePanel.setLayout(null);
-        newExpensePanel.setBounds((int)(CommonConstants.GUI_SIZE.width * 0.03),
+        newExpensePanel.setBounds((int) (CommonConstants.GUI_SIZE.width * 0.1),
                 (CommonConstants.GUI_SIZE.height - CommonConstants.ADDEXPENSE_SIZE.height - 50), CommonConstants.ADDEXPENSE_SIZE.width, CommonConstants.ADDEXPENSE_SIZE.height);
         newExpensePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
 
         // amount field
         amountTextPane = new CustomTextPane("Amount");
 //        amountTextPane = new JTextPane();
-        amountTextPane.setPreferredSize(new Dimension(100,25));
+        amountTextPane.setPreferredSize(new Dimension(100, 25));
         amountTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
         amountTextPane.setBounds(10, 10, CommonConstants.TEXTPANE_SIZE.width, CommonConstants.TEXTPANE_SIZE.height);
 
         // description field
         descriptionTextPane = new CustomTextPane("Description");
 //        descriptionTextPane = new JTextPane();
-        descriptionTextPane.setPreferredSize(new Dimension(100,25));
+        descriptionTextPane.setPreferredSize(new Dimension(100, 25));
         descriptionTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
         descriptionTextPane.setBounds(10, 45, CommonConstants.TEXTPANE_SIZE.width, CommonConstants.TEXTPANE_SIZE.height);
 
@@ -70,14 +72,14 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
         // add task button
         addExpenseButton = new JButton("Add Expense");
         addExpenseButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        addExpenseButton.setBounds(0,CommonConstants.ADDEXPENSE_SIZE.height-30, (int)(CommonConstants.ADDEXPENSE_SIZE.width), 30);
+        addExpenseButton.setBounds(0, CommonConstants.ADDEXPENSE_SIZE.height - 30, (int) (CommonConstants.ADDEXPENSE_SIZE.width), 30);
         addExpenseButton.addActionListener(this);
         addExpenseButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
 
         // previousMonthButton and nextMonthButton
         previousMonthButton = new JButton("Previous Month");
         previousMonthButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        previousMonthButton.setBounds(20,20, CommonConstants.TEXTPANE_SIZE.width, CommonConstants.TEXTPANE_SIZE.height);
+        previousMonthButton.setBounds(20, 20, CommonConstants.TEXTPANE_SIZE.width, CommonConstants.TEXTPANE_SIZE.height);
         previousMonthButton.addActionListener(this);
         nextMonthButton = new JButton("Next Month");
         nextMonthButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -87,13 +89,14 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
 
         // add total expense counter label
         totalExpenseTextPane = new JLabel("Total expenses: " + DatabaseTransactions.getSumByMonth(LocalDate.now()));
-        totalExpenseTextPane.setBounds(180, 500, CommonConstants.TEXTPANE_SIZE.width, CommonConstants.TEXTPANE_SIZE.height);
+        totalExpenseTextPane.setBounds(180, 500, CommonConstants.TOTAL_EXPENSES_LABEL_SIZE.width, CommonConstants.TOTAL_EXPENSES_LABEL_SIZE.height);
 
 
         // add expenses list panel
         expensesList = new JPanel();
         expensesList.setLayout(new BoxLayout(expensesList, BoxLayout.Y_AXIS));
-        expensesList.setPreferredSize(new Dimension(CommonConstants.EXPENSES_LIST_SIZE.width, 500));
+//        expensesList.setPreferredSize(new Dimension(CommonConstants.EXPENSES_LIST_SIZE.width, 500));
+        expensesList.setPreferredSize(null);
         expensesList.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 
@@ -102,7 +105,7 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
 
         // make it scrollable
         JScrollPane scrollPane = new JScrollPane(expensesList);
-        scrollPane.setBounds((int)(CommonConstants.GUI_SIZE.width*0.55), 20,
+        scrollPane.setBounds((int) (CommonConstants.GUI_SIZE.width * 0.55), 20,
                 CommonConstants.EXPENSES_LIST_SIZE.width, CommonConstants.EXPENSES_LIST_SIZE.height);
 
         scrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -114,16 +117,15 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
         verticalScrollBar.setUnitIncrement(20);
 
 
-
         newExpensePanel.add(categoryDropDown);
         newExpensePanel.add(amountTextPane);
         newExpensePanel.add(descriptionTextPane);
         newExpensePanel.add(addExpenseButton);
         getContentPane().add(scrollPane);
 
-        expensePieChartPanel= new ExpensePieChartPanel();
+        expensePieChartPanel = new ExpensePieChartPanel();
 
-        expensePieChartPanel.setBounds(20,60, CommonConstants.CHART_SIZE.width, CommonConstants.CHART_SIZE.height);
+        expensePieChartPanel.setBounds(20, 60, CommonConstants.CHART_SIZE.width, CommonConstants.CHART_SIZE.height);
         add(expensePieChartPanel);
         add(totalExpenseTextPane);
         add(previousMonthButton);
@@ -138,10 +140,18 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
 
 
         this.getContentPane().add(newExpensePanel, BorderLayout.CENTER);
+
+
     }
 
 
-
+    public static void setGlobalUIFont(Font font) {
+        UIManager.getLookAndFeelDefaults().entrySet().forEach(entry -> {
+            if (entry.getKey().toString().toLowerCase().contains("font")) {
+                UIManager.put(entry.getKey(), font);
+            }
+        });
+    }
 
 
     public void updateTotalLabel(LocalDate neededDate) throws SQLException {
@@ -154,7 +164,31 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
         System.out.println(expc.length);
         expensesList.removeAll();
         for (ExpenseComponent exp : expc) {
-            expensesList.add(new JLabel(exp.toString()));
+            JPanel rowPanel = new JPanel();
+            JButton deleteButtob = new JButton("X");
+            rowPanel.add(deleteButtob);
+            rowPanel.add(new JLabel(exp.toString()));
+            rowPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
+
+            // lambda for deletion
+            deleteButtob.addActionListener(e -> {
+                try {
+                    DatabaseTransactions.deleteExpense(exp.getId());
+                    expensesList.remove(rowPanel); // Remove this row from the UI
+                    expensesList.revalidate();
+                    expensesList.repaint();
+                    updateTotalLabel(date);
+                    expensePieChartPanel.refreshChart(currentMonth);
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }) ;
+
+            expensesList.add(rowPanel);
+            // adding distance between records
+
         }
         expensesList.revalidate();
         expensesList.repaint();
@@ -162,7 +196,9 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
 
     public void updateInterface() {
         amountTextPane.setText("");
+        amountTextPane.resetToPlaceholder();
         descriptionTextPane.setText("");
+        descriptionTextPane.resetToPlaceholder();
         categoryDropDown.setSelectedIndex(0);
         expensePieChartPanel.refreshChart(LocalDate.now());
     }
@@ -171,22 +207,22 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == addExpenseButton && !amountTextPane.getText().isEmpty() && !descriptionTextPane.getText().isEmpty()) {
-        double amount = Double.parseDouble(amountTextPane.getText());
-        String description = descriptionTextPane.getText();
-        int category = DatabaseTransactions.getCategoryId(categoryDropDown.getSelectedItem().toString());
-        LocalDate date = LocalDate.now();
+            double amount = Double.parseDouble(amountTextPane.getText());
+            String description = descriptionTextPane.getText();
+            int category = DatabaseTransactions.getCategoryId(categoryDropDown.getSelectedItem().toString());
+            LocalDate date = LocalDate.now();
 
-        if (!amountTextPane.getText().isEmpty() && !description.isEmpty()) {
-            DatabaseTransactions.insertExpense(amount, description, category, date.toString());
+            if (!amountTextPane.getText().isEmpty() && !description.isEmpty()) {
+                DatabaseTransactions.insertExpense(amount, description, category, date.toString());
+            }
+            updateInterface();
+            try {
+                updateTotalLabel(LocalDate.now());
+                getList(date);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         }
-        updateInterface();
-        try {
-            updateTotalLabel(LocalDate.now());
-            getList(date);
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
         // previous/next month buttons change the diagram, displayed expenses and total expenditure label
         if (e.getSource() == previousMonthButton) {
             currentMonth = currentMonth.minusMonths(1);
@@ -217,8 +253,6 @@ public class ExpenseTrackerGui extends JFrame implements ActionListener, ItemLis
 
             expensePieChartPanel.refreshChart(currentMonth);
         }
-
-
 
 
     }

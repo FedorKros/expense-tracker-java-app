@@ -124,4 +124,19 @@ public class DatabaseTransactions {
         }
         return components.toArray(new ExpenseComponent[0]);
     }
+
+    public static void deleteExpense(int id) throws SQLException {
+        String deleteSQL = "DELETE FROM expenses WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+            PreparedStatement pstmt = conn.prepareStatement(deleteSQL)) {
+
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        }
+        catch (SQLException e) {
+            System.out.println("Coudln't delete expense: " + e.getMessage());
+        }
+    }
+
+
 }
